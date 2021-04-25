@@ -9,6 +9,18 @@ namespace Raspberryio_HC_SR04
 {
     public class Hcsr04 : IDisposable
     {
+        #region Public Delegates
+
+        public delegate void DistanceUpdatedEventHandler(Hcsr04 sender);
+
+        #endregion Public Delegates
+
+        #region Public Events
+
+        public event DistanceUpdatedEventHandler DistanceUpdated;
+
+        #endregion Public Events
+
         #region Public Properties
 
         public double? Distance { get; set; }
@@ -27,8 +39,9 @@ namespace Raspberryio_HC_SR04
 
         #region Private Fields
 
-        private const int SOUND_SPEED = 340;
         private const int MAXIMUM_DISTANCE = 300;
+        private const int SOUND_SPEED = 340;
+        private const double UPDATE_DISTANCE_THRESHOLD = 0.01;
 
         #endregion Private Fields
 
@@ -42,6 +55,7 @@ namespace Raspberryio_HC_SR04
 
             TriggerPin.PinMode = GpioPinDriveMode.Output;
             EchoPin.PinMode = GpioPinDriveMode.Input;
+            Distance = double.MinValue;
         }
 
         #endregion Public Constructors
@@ -83,6 +97,15 @@ namespace Raspberryio_HC_SR04
 
         #region Private Methods
 
+        private bool DistanceIsUpdated(double? distance)
+        {
+            if (distance == null && Distance == null) return false;
+            if (distance == null && Distance != null) return true;
+            if (distance != null && Distance == null) return true;
+            return distance != null && Distance != null &&
+                   Math.Abs(Distance.Value - distance.Value) > UPDATE_DISTANCE_THRESHOLD;
+        }
+
         private bool MeasureIsTimeout()
         {
             return Pi.Timing.MillisecondsSinceSetup > (ProcessStart + UpdateIntervalMs);
@@ -103,6 +126,7 @@ namespace Raspberryio_HC_SR04
 
             double? impulsionStart = null;
             double? impulsionEnd = null;
+            double? distance = null;
 
             while (EchoPin.Read() == false && !MeasureIsTimeout())
             {
@@ -116,13 +140,18 @@ namespace Raspberryio_HC_SR04
 
             if (impulsionStart == null || impulsionEnd == null)
             {
-                Distance = null;
+                distance = null;
             }
             else
             {
-                Distance = Math.Round((impulsionEnd.Value - impulsionStart.Value) / 10000 * SOUND_SPEED / 2, 2);
-                if (Distance > MAXIMUM_DISTANCE) Distance = null;
+                distance = Math.Round((impulsionEnd.Value - impulsionStart.Value) / 10000 * SOUND_SPEED / 2, 2);
+                if (distance > MAXIMUM_DISTANCE) distance = null;
             }
+
+            if (!DistanceIsUpdated(distance)) return;
+
+            Distance = distance;
+            DistanceUpdated?.BeginInvoke(this, null, null);
         }
 
         #endregion Private Methods
