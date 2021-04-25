@@ -16,7 +16,7 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install -y nuget mono-devel mono-xbuild
     - name: Nuget Self Update  
-      run: nuget update -self
+      run: sudo nuget update -self
     - name: Nuget restore  
       run: nuget restore
     - name: Restore dependencies
