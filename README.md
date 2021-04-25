@@ -1,4 +1,4 @@
-# Raspberryio-hc-sr04
+# Raspberryio-hc-sr04 [![.NET](https://github.com/valcriss/raspberryio-hc-sr04/actions/workflows/dotnet.yml/badge.svg)](https://github.com/valcriss/raspberryio-hc-sr04/actions/workflows/dotnet.yml)
 Using the [raspberryio](https://github.com/unosquare/raspberryio "raspberryio") library to interract with the [hc-sr04](https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf "hc-sr04") ultrasonic ranging detector sensor module.
 
 This example is based on this very good [article](https://raspberry-lab.fr/Composants/Mesure-de-distance-avec-HC-SR04-Raspberry-Francais/) 
