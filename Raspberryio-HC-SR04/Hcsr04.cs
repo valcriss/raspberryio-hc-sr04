@@ -55,7 +55,7 @@ namespace Raspberryio_HC_SR04
 
             TriggerPin.PinMode = GpioPinDriveMode.Output;
             EchoPin.PinMode = GpioPinDriveMode.Input;
-            Distance = double.MinValue;
+            Distance = null;
         }
 
         #endregion Public Constructors
