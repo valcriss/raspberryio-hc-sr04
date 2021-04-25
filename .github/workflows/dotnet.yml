@@ -13,9 +13,11 @@ jobs:
  
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
+    - name: Install dependencies
       run: apt-get install -y nuget mono-devel mono-xbuild
+    - name: Nuget Self Update  
       run: nuget update -self
+    - name: Nuget restore  
       run: nuget restore
     - name: Restore dependencies
       run: nuget restore
